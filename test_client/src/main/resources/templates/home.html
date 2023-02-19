@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flowers homepage</title>
+</head>
+<body>
+<h1>Welcome to Flowers App!</h1>
+<table>
+    <tr>
+        <th>Flower name</th>
+    </tr>
+    <tr th:each="flower: ${response.flowers}">
+        <td th:text="${flower.name}"></td>
+    </tr>
+</table>
+</body>
+</html>

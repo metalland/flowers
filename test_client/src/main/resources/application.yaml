@@ -1,0 +1,27 @@
+server:
+  port: 9001
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          flowers_app_oidc:
+            provider: spring
+            client-id: flowers_app
+            client-secret: flowers_secret
+            authorization-grant-type: authorization_code
+            redirect-uri: "http://flowers.io:9001/login/oauth2/code/flowers_app_oidc"
+            scope: openid
+            client-name: flowers_app_oidc
+          flowers_app_authorization_code:
+            provider: spring
+            client-id: flowers_app
+            client-secret: flowers_secret
+            authorization-grant-type: authorization_code
+            redirect-uri: "http://flowers.io:9001/callback"
+            scope: flowers.user
+            client-name: flowers_app_authorization_code
+        provider:
+          spring:
+            issuer-uri: http://auth-flowers.io:9000
