@@ -15,7 +15,7 @@ class FlowersController {
   @Autowired
   private lateinit var webClient: WebClient;
 
-  @GetMapping("/")
+  @GetMapping("/home")
   fun getHomePage(
     model: Model,
     @RegisteredOAuth2AuthorizedClient("flowers_app_authorization_code") authorizedClient: OAuth2AuthorizedClient

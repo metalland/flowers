@@ -40,7 +40,7 @@ class SecurityConfig {
   fun securityFilterChain(http: HttpSecurity): SecurityFilterChain? {
     http
       .authorizeRequests {
-        it.anyRequest().authenticated()
+        it.mvcMatchers("/home").authenticated()
       }
       .oauth2Login { oauth2Login: OAuth2LoginConfigurer<HttpSecurity> ->
         oauth2Login.loginPage(

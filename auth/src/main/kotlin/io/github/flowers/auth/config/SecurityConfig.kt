@@ -1,24 +1,23 @@
 package io.github.flowers.auth.config
 
-import com.nimbusds.jose.jwk.JWKSelector
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet
 import com.nimbusds.jose.jwk.source.JWKSource
 import com.nimbusds.jose.proc.SecurityContext
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Import
-import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
-import org.springframework.security.config.Customizer
 import org.springframework.security.config.Customizer.withDefaults
+import org.springframework.security.config.annotation.authentication.configurers.provisioning.JdbcUserDetailsManagerConfigurer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer.ExpressionInterceptUrlRegistry
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.oauth2.core.AuthorizationGrantType
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod
 import org.springframework.security.oauth2.core.oidc.OidcScopes
@@ -26,7 +25,6 @@ import org.springframework.security.oauth2.server.authorization.client.InMemoryR
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient
 import org.springframework.security.oauth2.server.authorization.config.ClientSettings
 import org.springframework.security.oauth2.server.authorization.config.ProviderSettings
-import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
 import java.security.KeyPair
@@ -34,21 +32,27 @@ import java.security.KeyPairGenerator
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
 import java.util.*
+import javax.sql.DataSource
 
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig {
 
+  @Autowired
+  private lateinit var datasource: DataSource
+
+
   @Bean
-  fun users(): UserDetailsService = InMemoryUserDetailsManager(
-    User
-      .withDefaultPasswordEncoder()
-      .username("user")
-      .password("password")
-      .authorities("user")
-      .build()
-  )
+  fun users(): UserDetailsService {
+    return JdbcUserDetailsManagerConfigurer()
+      .dataSource(datasource)
+      .userDetailsService
+  }
+
+  @Bean
+  fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder(12)
+
 
   @Bean
   fun registeredClientRepository() = InMemoryRegisteredClientRepository(
@@ -56,7 +60,7 @@ class SecurityConfig {
       .withId(UUID.randomUUID().toString())
       .clientId("flowers_app")
       .clientName("Flowers App")
-      .clientSecret("{noop}flowers_secret")
+      .clientSecret("\$2y\$12\$VI.Cp6T1tH4cUdHH9nckYuxeTgXfeBno.3WHZKeLmUPInTurs10QW")
       .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
       .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
       .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)

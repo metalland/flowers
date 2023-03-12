@@ -14,7 +14,7 @@ class RegistrationController {
   private lateinit var registrationServices: List<RegistrationService<*>>
 
   @GetMapping("/register")
-  fun register(model: Model) : String {
+  fun register(model: Model): String {
     model.addAttribute("registration", RegistrationPayload())
     return "registration";
   }

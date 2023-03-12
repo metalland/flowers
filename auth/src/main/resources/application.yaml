@@ -1,2 +1,11 @@
 server:
   port: 9000
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQL82Dialect
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/auth_app"
+    username: postgres
+    password: password
